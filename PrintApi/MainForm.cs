@@ -187,10 +187,14 @@ namespace TestProject
 
                             using (GhostscriptProcessor processor = new GhostscriptProcessor())
                             {
+                                //https://ghostscript.com/doc/Use.htm#PDF
+
                                 List<string> switches = new List<string>();
                                 switches.Add("-empty");
                                 switches.Add("-dPrinted");
+                                //인쇄 후 대화형 PostScript 프롬프트로 이동X 
                                 switches.Add("-dBATCH");
+                                //계속하려면 아무 키나 누르십시오'를 건너뜀
                                 switches.Add("-dNOPAUSE");
                                 //switches.Add("-dQUIET");
                                 switches.Add("-dNOSAFER");
@@ -198,6 +202,10 @@ namespace TestProject
                                 switches.Add("-dNumCopies=1");
                                 switches.Add("-dQueryUser=3");
                                 switches.Add("-dORIENT1=false");
+
+                                //인쇄모드 가로로 변경
+                                switches.Add("-dDEVICEWIDTHPOINTS=792");
+                                switches.Add("-dDEVICEHEIGHTPOINTS=612");
                                 //switches.Add("-sPAPERSIZE=a4");
 
                                 //switches.Add("-dNORANGEPAGESIZE");
@@ -210,10 +218,10 @@ namespace TestProject
                                 try
                                 {
                                     processor.StartProcessing(switches.ToArray(), null);
-                                    CreateFileSerilog("ZPL|" + printerName + "|" + inputFile);
+                                    CreateFileSerilog("PRT|" + printerName + "|" + inputFile);
                                 }
                                 catch (Exception e) {
-                                    CreateFileSerilog("ZPL_ERROR|" + e.Message.ToString());
+                                    CreateFileSerilog("PRT_ERROR|" + e.Message.ToString());
                                 }
                                 finally
                                 {
@@ -232,7 +240,7 @@ namespace TestProject
                             }
                             catch (Exception e)
                             {
-                                CreateFileSerilog("ZPL_FILEDEL_ERROR|" + e.Message.ToString());
+                                CreateFileSerilog("FILEDEL_ERROR|" + e.Message.ToString());
                             }
 
 
@@ -262,7 +270,7 @@ namespace TestProject
                             {
                                 RawPrinterHelper.SendStringToPrinter(pd.PrinterSettings.PrinterName, barcode);
 
-                                CreateFileSerilog("PRINT|" + pd.PrinterSettings.PrinterName + "|" + barcode);
+                                CreateFileSerilog("ZPL_PRINT|" + pd.PrinterSettings.PrinterName + "|" + barcode);
 
                             }
                             catch (Exception e)
@@ -271,7 +279,7 @@ namespace TestProject
                                 if (richTextBox2.InvokeRequired)
                                     richTextBox2.Invoke(new MethodInvoker(delegate { richTextBox2.Text = e.Message.ToString(); }));                               
                                 
-                                CreateFileSerilog("PRINT_ERROR|" + e.Message.ToString());
+                                CreateFileSerilog("ZPL_PRINT_ERROR|" + e.Message.ToString());
                             }
                             finally
                             {
